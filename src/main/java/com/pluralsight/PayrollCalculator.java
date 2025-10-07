@@ -6,28 +6,42 @@ public class PayrollCalculator {
 
     public static void main(String[] args) throws IOException {
 
-        FileReader fileReader = new FileReader("employees.csv");
-        BufferedReader bufReader = new BufferedReader(fileReader);
+        // using try/catch with resources for the BufferedReader
+        try (BufferedReader bufReader = new BufferedReader(new FileReader("employees.csv"))) {
 
-        Employee[] roster = new Employee[10];
-        int employeeCount = 0;
+            // creates Employee array to place Employee objects
+            Employee[] roster = new Employee[10];
+            // creates int employeeCount
+            int employeeCount = 0;
 
-        String input = bufReader.readLine();
+            // eats the first line because it is a label of file columns
+            String input = bufReader.readLine();
 
-        while((input = bufReader.readLine()) != null) {
+            // while loop to read each Employee object by initializing input as the bufReader.readLine()
+            while ((input = bufReader.readLine()) != null) {
 
-            String[] info = input.split("\\|");
+                // splits String along | to get employee info individually
+                String[] info = input.split("\\|");
 
-            Employee newEmp = new Employee(info[0], info[1], Double.parseDouble(info[2]), Double.parseDouble(info[3]));
+                // creates Employee object based on the readLine info
+                Employee newEmp = new Employee(info[0], info[1], Double.parseDouble(info[2]), Double.parseDouble(info[3]));
 
-            System.out.printf("""
-                    Employee %s, Name: %s, Gross Pay: $%.2f
-                    """, newEmp.getEmployeeId(), newEmp.getName(), newEmp.getGrossPay());
+                // prints out ID, name, and gross pay of each Employee
+                System.out.printf("""
+                        Employee %s, Name: %s, Gross Pay: $%.2f
+                        """, newEmp.getEmployeeId(), newEmp.getName(), newEmp.getGrossPay());
 
-            roster[employeeCount++] = newEmp;
+                // adds newEmp to roster and adds to employeeCount
+                roster[employeeCount++] = newEmp;
+
+            }
+
+            // catches exceptions with simple print of error message
+        } catch (Exception e) {
+
+            System.out.println("Problem reading file.");
 
         }
-
     }
 
 }
