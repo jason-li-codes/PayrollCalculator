@@ -9,7 +9,9 @@ public class PayrollCalculator {
 
     public static void main(String[] args) {
 
-        Employee[] roster = analyzeEmployeeInfo("employees.csv");
+        String fileName = getValidFileName();
+
+        Employee[] roster = analyzeEmployeeInfo(fileName);
 
         boolean isRunning = true;
 
@@ -43,6 +45,50 @@ public class PayrollCalculator {
         }
     }
 
+    public static String getValidFileName() {
+
+        // initializes inputNumber and boolean badInput
+        String inputName = "";
+        boolean badInput = false;
+
+        // uses do/while loop so validating happens at least once
+        do {
+
+            // sets badInput to false first
+            badInput = false;
+
+            // ask the user for fileName
+            System.out.print("Please enter the name of the file you'd like to analyze: ");
+            inputName = input.nextLine();
+
+            try {
+                // try to open the file by creating FileReader
+                FileReader fileReader = new FileReader(inputName);
+
+                // if that works, the file is real and can be analyzed
+                System.out.println("File found: " + inputName);
+                // close the file after checking
+                fileReader.close();
+
+            } catch (FileNotFoundException e) {
+                // if the file does not exist, catch the FileNotFoundException
+                System.out.println("Error: file not found. Please try again.");
+                badInput = true;
+
+            } catch (IOException e) {
+                // catch other IOExceptions
+                System.out.println("Error: file cannot be read. Please try again.");
+                badInput = true;
+            }
+
+            // conditional checks badInput boolean
+        } while (badInput);
+
+        // returns the correct inputNumber as an int
+        return inputName;
+
+    }
+
     public static int getValidNumber() {
 
         // initializes inputNumber and boolean badInput
@@ -74,10 +120,10 @@ public class PayrollCalculator {
     }
 
     // using try/catch with resources for the BufferedReader
-    public static void analyzeEmployeeInfo() {
+    public static void analyzeEmployeeInfo(String fileName) {
 
         // initializing BufferedReader
-        try (BufferedReader bufReader = new BufferedReader(new FileReader("employees.csv"))) {
+        try (BufferedReader bufReader = new BufferedReader(new FileReader(fileName))) {
 
             // creates Employee array to place Employee objects
             Employee[] roster = new Employee[10];
@@ -112,13 +158,16 @@ public class PayrollCalculator {
             System.out.println("Problem reading file.");
 
         }
+
+        return roster;
+
     }
 
     public static Employee[] printGrossPayInfo() {
 
     }
 
-    public static void createGrossPayFile(){
+    public static void createGrossPayFile() {
         return;
     }
 
