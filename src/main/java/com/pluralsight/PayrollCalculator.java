@@ -7,11 +7,13 @@ public class PayrollCalculator {
 
     public static Scanner input = new Scanner(System.in);
 
+    public static Employee[] roster = new Employee[10];
+
     public static void main(String[] args) {
 
         String fileName = getValidFileName();
 
-        Employee[] roster = analyzeEmployeeInfo(fileName);
+        analyzeEmployeeInfo(fileName);
 
         boolean isRunning = true;
 
@@ -125,8 +127,6 @@ public class PayrollCalculator {
         // initializing BufferedReader
         try (BufferedReader bufReader = new BufferedReader(new FileReader(fileName))) {
 
-            // creates Employee array to place Employee objects
-            Employee[] roster = new Employee[10];
             // creates int employeeCount
             int employeeCount = 0;
 
@@ -142,11 +142,6 @@ public class PayrollCalculator {
                 // creates Employee object based on the readLine info
                 Employee newEmp = new Employee(info[0], info[1], Double.parseDouble(info[2]), Double.parseDouble(info[3]));
 
-                // prints out ID, name, and gross pay of each Employee
-                System.out.printf("""
-                        Employee %s, Name: %s, Gross Pay: $%.2f
-                        """, newEmp.getEmployeeId(), newEmp.getName(), newEmp.getGrossPay());
-
                 // adds newEmp to roster and adds to employeeCount
                 roster[employeeCount++] = newEmp;
 
@@ -155,16 +150,24 @@ public class PayrollCalculator {
             // catches exceptions with simple print of error message
         } catch (Exception e) {
 
-            System.out.println("Problem reading file.");
+            System.out.println("Error: File cannot be read. Please try again.");
 
         }
 
-        return roster;
-
     }
 
-    public static Employee[] printGrossPayInfo() {
+    public static void printGrossPayInfo() {
 
+        for (Employee employee : roster) {
+
+            if (employee != null) {
+                // prints out ID, name, and gross pay of each Employee
+                System.out.printf("""
+                        Employee %s, Name: %s, Gross Pay: $%.2f
+                        """, employee.getEmployeeId(), employee.getName(), employee.getGrossPay());
+
+            }
+        }
     }
 
     public static void createGrossPayFile() {
