@@ -40,7 +40,7 @@ public class PayrollCalculator {
                     isRunning = false;
                     break;
                 default:
-                    System.out.println("That is not a menu option. Try again.");
+                    System.out.println("That is not a menu option. Please try again.");
                     break;
             }
 
@@ -75,11 +75,13 @@ public class PayrollCalculator {
             } catch (FileNotFoundException e) {
                 // if the file does not exist, catch the FileNotFoundException
                 System.out.println("Error: file not found. Please try again.");
+                e.getStackTrace();
                 badInput = true;
 
             } catch (IOException e) {
                 // catch other IOExceptions
                 System.out.println("Error: file cannot be read. Please try again.");
+                e.getStackTrace();
                 badInput = true;
             }
 
@@ -109,6 +111,7 @@ public class PayrollCalculator {
                 // if it can't read as int, throws exception with error message and sets badInput to true to try again
             } catch (Exception e) {
                 System.out.println("Sorry I don't know what you mean, let's try again.");
+                e.getStackTrace();
                 badInput = true;
             }
             // eats buffer
@@ -151,7 +154,7 @@ public class PayrollCalculator {
         } catch (Exception e) {
 
             System.out.println("Error: File cannot be read. Please try again.");
-
+            e.getStackTrace();
         }
 
     }
@@ -171,7 +174,26 @@ public class PayrollCalculator {
     }
 
     public static void createGrossPayFile() {
-        return;
+
+        System.out.println("Enter the name of the file you would like to create: ");
+        String newFileName = input.nextLine();
+
+        try (BufferedWriter bufWriter = new BufferedWriter(new FileWriter(newFileName))) {
+
+            bufWriter.write("id|name|gross pay\n");
+
+            for (Employee employee : roster) {
+
+                if (employee != null) {
+                    bufWriter.write(String.join("|", employee.getEmployeeId(), employee.getName(),
+                            String.format("%.2f", employee.getGrossPay())));
+
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error: file cannot be written. Please try again.");
+            e.getStackTrace();
+        }
     }
 
 }
