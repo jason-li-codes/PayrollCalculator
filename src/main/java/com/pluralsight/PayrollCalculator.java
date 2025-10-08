@@ -1,12 +1,82 @@
 package com.pluralsight;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class PayrollCalculator {
 
-    public static void main(String[] args) throws IOException {
+    public static Scanner input = new Scanner(System.in);
 
-        // using try/catch with resources for the BufferedReader
+    public static void main(String[] args) {
+
+        Employee[] roster = analyzeEmployeeInfo("employees.csv");
+
+        boolean isRunning = true;
+
+        while (isRunning) {
+
+            System.out.println("""
+                    Employee info has been analyzed. What would you like to do?
+                    (1) Print out employee gross pay information
+                    (2) Create file for gross pay information
+                    (3) Exit program
+                    """);
+
+            int choice = getValidNumber();
+
+            switch (choice) {
+                case 1:
+                    printGrossPayInfo();
+                    break;
+                case 2:
+                    createGrossPayFile();
+                    break;
+                case 3:
+                    System.out.println("EXITING....");
+                    isRunning = false;
+                    break;
+                default:
+                    System.out.println("That is not a menu option. Try again.");
+                    break;
+            }
+
+        }
+    }
+
+    public static int getValidNumber() {
+
+        // initializes inputNumber and boolean badInput
+        int inputNumber = 0;
+        boolean badInput = false;
+
+        // uses do/while loop
+        do {
+
+            // sets badInput to false first
+            badInput = false;
+
+            //tries to get an input
+            try {
+                inputNumber = input.nextInt();
+                // if it can't read as int, throws exception with error message and sets badInput to true to try again
+            } catch (Exception e) {
+                System.out.println("Sorry I don't know what you mean, let's try again.");
+                badInput = true;
+            }
+            // eats buffer
+            input.nextLine();
+            // conditional checks badInput boolean
+        } while (badInput);
+
+        // returns the correct inputNumber as an int
+        return inputNumber;
+
+    }
+
+    // using try/catch with resources for the BufferedReader
+    public static void analyzeEmployeeInfo() {
+
+        // initializing BufferedReader
         try (BufferedReader bufReader = new BufferedReader(new FileReader("employees.csv"))) {
 
             // creates Employee array to place Employee objects
@@ -42,6 +112,14 @@ public class PayrollCalculator {
             System.out.println("Problem reading file.");
 
         }
+    }
+
+    public static Employee[] printGrossPayInfo() {
+
+    }
+
+    public static void createGrossPayFile(){
+        return;
     }
 
 }
