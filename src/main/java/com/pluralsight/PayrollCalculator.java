@@ -5,22 +5,27 @@ import java.util.Scanner;
 
 public class PayrollCalculator {
 
+    // public scanner to avoid using scanner as input for every method
     public static Scanner input = new Scanner(System.in);
 
+    // creates public Employee array so every method can access and update
     public static Employee[] roster = new Employee[10];
 
     public static void main(String[] args) {
 
+        // creates a String fileName with method to ensure it is valid
         String fileName = getValidFileName();
 
+        // run analysis and fill roster with employee info from file
         analyzeEmployeeInfo(fileName);
-
         System.out.println("Employee info has been analyzed.");
 
+        // isRunning boolean to create looping menu
         boolean isRunning = true;
 
         while (isRunning) {
 
+            // prints main menu
             System.out.println("""
                     What would you like to do?
                     (1) Print out employee gross pay information
@@ -28,8 +33,10 @@ public class PayrollCalculator {
                     (3) Exit program
                     """);
 
+            // uses method to ensure integer input
             int choice = getValidNumber();
 
+            // switch case leading to other methods
             switch (choice) {
                 case 1:
                     printGrossPayInfo();
@@ -37,10 +44,12 @@ public class PayrollCalculator {
                 case 2:
                     createGrossPayFile();
                     break;
+                // exits program by changing isRunning to false
                 case 3:
                     System.out.println("EXITING....");
                     isRunning = false;
                     break;
+                // if any other integer is chosen, display error message
                 default:
                     System.out.println("That is not an available menu option. Please try again.");
                     break;
@@ -51,7 +60,7 @@ public class PayrollCalculator {
 
     public static String getValidFileName() {
 
-        // initializes inputNumber and boolean badInput
+        // initializes inputName and boolean badInput
         String inputName = "";
         boolean badInput = false;
 
@@ -162,6 +171,7 @@ public class PayrollCalculator {
 
     public static void printGrossPayInfo() {
 
+        // checks every employee in the roster
         for (Employee employee : roster) {
 
             if (employee != null) {
@@ -174,61 +184,72 @@ public class PayrollCalculator {
         }
     }
 
+    // using try/catch with resources for the BufferedWriter
     public static void createGrossPayFile() {
 
-            System.out.println("Enter the name of the .csv or .json file you would like to create: ");
-            String newFileName = input.nextLine();
+        // asks user for file name
+        System.out.println("Enter the name of the .csv or .json file you would like to create: ");
+        String newFileName = input.nextLine();
 
+        // uses if statement to check for either .csv or .jon file and appropriate file name length
+        if (newFileName.endsWith(".csv") && newFileName.length() > 4) {
 
+            // uses try with resources with BufferedWriter, taking in user's newFileName
+            try (BufferedWriter bufWriter = new BufferedWriter(new FileWriter(newFileName))) {
 
-            if (newFileName.endsWith(".csv") && newFileName.length() > 4) {
+                // first creates label for .csv file
+                bufWriter.write("id|name|gross pay\n");
 
-                try (BufferedWriter bufWriter = new BufferedWriter(new FileWriter(newFileName))) {
+                // adds new line of formatted info for every employee in roster that isn't null
+                for (Employee employee : roster) {
 
-                    bufWriter.write("id|name|gross pay\n");
-
-                    for (Employee employee : roster) {
-
-                        if (employee != null) {
-                            bufWriter.write(String.join("|", employee.getEmployeeId(), employee.getName(),
-                                    String.format("%.2f", employee.getGrossPay())) + "\n");
-                        }
+                    if (employee != null) {
+                        bufWriter.write(String.join("|", employee.getEmployeeId(), employee.getName(),
+                                String.format("%.2f", employee.getGrossPay())) + "\n");
                     }
-                    System.out.println("File created successfully.");
-
-                } catch (IOException e) {
-                    System.out.println("Error: file cannot be written. Please try again.");
-                    e.getStackTrace();
                 }
-            } else if (newFileName.endsWith(".json") && newFileName.length() > 5) {
+                System.out.println("File created successfully.");
 
-                try (BufferedWriter bufWriter = new BufferedWriter(new FileWriter(newFileName))) {
-
-                    bufWriter.write("[\n");
-
-                    for (Employee employee : roster) {
-
-                        if (employee != null) {
-                            bufWriter.write(
-                                    "{ " +
-                                            String.join(", ",
-                                                    "\"id\" : " + employee.getEmployeeId(),
-                                                    "\"name\" : " + employee.getName(),
-                                                    "\"grossPay\" : " + String.format("%.2f", employee.getGrossPay()))
-                                            + " }\n");
-                        }
-                    }
-                    bufWriter.write("]");
-
-                    System.out.println("File created successfully.");
-
-                } catch (IOException e) {
-                    System.out.println("Error: file cannot be written. Please try again.");
-                    e.getStackTrace();
-                }
-            } else {
-                System.out.println("This file name is invalid/too short. Please try again with different file name.");
+            // catches IOException
+            } catch (IOException e) {
+                System.out.println("Error: file cannot be written. Please try again.");
+                e.getStackTrace();
             }
+        // checks for .json file ending and appropriate file name length
+        } else if (newFileName.endsWith(".json") && newFileName.length() > 5) {
+
+            // using try/catch with resources for the BufferedWriter
+            try (BufferedWriter bufWriter = new BufferedWriter(new FileWriter(newFileName))) {
+
+                // adds [ and ] at beginning and end of writer
+                bufWriter.write("[\n");
+
+                // for every employee in roster, adds formatted json file lines with String.join and Employee getters
+                for (Employee employee : roster) {
+
+                    if (employee != null) {
+                        bufWriter.write(
+                                "{ " +
+                                        String.join(", ",
+                                                "\"id\" : " + employee.getEmployeeId(),
+                                                "\"name\" : " + employee.getName(),
+                                                "\"grossPay\" : " + String.format("%.2f", employee.getGrossPay()))
+                                        + " }\n");
+                    }
+                }
+                bufWriter.write("]");
+
+                System.out.println("File created successfully.");
+
+            // catches IOExceptions
+            } catch (IOException e) {
+                System.out.println("Error: file cannot be written. Please try again.");
+                e.getStackTrace();
+            }
+        // if the fileName doesn't fulfill either of those conditions, print out error message
+        } else {
+            System.out.println("This file name is invalid/too short. Please try again with different file name.");
+        }
     }
 
 }
